@@ -1,0 +1,4 @@
+#!/bin/sh
+
+touch "/tmp/pcat-shutdown.tmp"
+poweroff
