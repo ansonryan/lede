@@ -1,24 +1,44 @@
 #!/bin/sh
 
-uci -q batch <<-EOF
-	set system.@system[0].timezone='CST-8'
-	set system.@system[0].zonename='Asia/Shanghai'
+BOARD_NAME="$(strings /proc/device-tree/compatible | head -1)"
+HOST_NAME_DEFAULT="photonicat-openwrt"
 
-	delete system.ntp.server
-	add_list system.ntp.server='ntp1.aliyun.com'
-	add_list system.ntp.server='ntp.tencent.com'
-	add_list system.ntp.server='ntp.ntsc.ac.cn'
-	add_list system.ntp.server='time.apple.com'
-EOF
+if [ x"${BOARD_NAME}" = x"ariaboard,photonicat2" ]; then
+    HOST_NAME_DEFAULT="photonicat2-openwrt"
+fi
+
+mkdir -p /tmp/oem
+mount -t vfat -o ro /dev/mmcblk0boot1 /tmp/oem 2>/dev/null || true
+if [ -f "/tmp/oem/oem.txt" ]; then
+    source "/tmp/oem/oem.txt"
+    mkdir -p /usr/share/pcat-manager-web/oem
+    mkdir -p /usr/share/pcat-manager-web/static
+    cp /tmp/oem/oem.txt /usr/share/pcat-manager-web/
+    cp /tmp/oem/oem-logo.* /usr/share/pcat-manager-web/static/ || true
+    cp /tmp/oem/oem-trademark.* /usr/share/pcat-manager-web/static/ || true
+    cp /tmp/oem/oem-logo-text.* /usr/share/pcat-manager-web/static/ || true
+    cp /tmp/oem/oem-favicon-*.png /usr/share/pcat-manager-web/static/ || true
+    cp /tmp/oem/oem-apple-*.png /usr/share/pcat-manager-web/static/ || true
+fi
+umount /tmp/oem 2>/dev/null || true
+
+uci set luci.main.lang=zh_cn
+uci commit luci
+
+uci set system.@system[0].timezone=CST-8
+uci set system.@system[0].zonename=Asia/Shanghai
+if [ x"${OEM_PASSWORD}" != x"" ]; then
+    uci set system.@system[0].hostname=openwrt
+else
+    uci set system.@system[0].hostname="${HOST_NAME_DEFAULT}"
+fi
+
 uci commit system
 
 rm -f /usr/lib/lua/luci/view/admin_status/index/mwan.htm
 rm -f /usr/lib/lua/luci/view/admin_status/index/upnp.htm
 rm -f /usr/lib/lua/luci/view/admin_status/index/ddns.htm
 rm -f /usr/lib/lua/luci/view/admin_status/index/minidlna.htm
-
-rm -f /www/luci-static/resources/view/status/include/70_ddns.js
-rm -f /www/luci-static/resources/view/status/include/80_upnp.js
 
 sed -i 's/\"services\"/\"nas\"/g' /usr/lib/lua/luci/controller/aria2.lua
 sed -i 's/services/nas/g' /usr/lib/lua/luci/view/aria2/overview_status.htm
@@ -33,28 +53,30 @@ sed -i 's/\"services\"/\"nas\"/g' /usr/lib/lua/luci/controller/usb_printer.lua
 sed -i 's/\"services\"/\"nas\"/g' /usr/lib/lua/luci/controller/xunlei.lua
 sed -i 's/services/nas/g'  /usr/lib/lua/luci/view/minidlna_status.htm
 
-sed -i 's/\"services\"/\"nas\"/g' /usr/share/luci/menu.d/luci-app-samba4.json
-
-sed -i 's#downloads.openwrt.org#mirrors.tencent.com/lede#g' /etc/opkg/distfeeds.conf
-sed -i 's#downloads.openwrt.org#mirrors.tencent.com/lede#g' /etc/apk/repositories.d/distfeeds.list
-sed -i 's/root::0:0:99999:7:::/root:$1$V4UetPzk$CYXluq4wUazHjmCDBCqXF.:0:0:99999:7:::/g' /etc/shadow
-sed -i 's/root:::0:99999:7:::/root:$1$V4UetPzk$CYXluq4wUazHjmCDBCqXF.:0:0:99999:7:::/g' /etc/shadow
-
-sed -i "s/# //g" /etc/opkg/distfeeds.conf
-sed -i '/helloworld/d' /etc/opkg/distfeeds.conf
-sed -i '/openwrt_luci/ { s/snapshots/releases\/18.06.9/g; }'  /etc/opkg/distfeeds.conf
+if [ x"${OEM_PASSWORD}" != x"" ]; then
+    echo "root:${OEM_PASSWORD}" | chpasswd
+else
+    echo "root:photonicat" | chpasswd
+fi
 
 sed -i '/check_signature/d' /etc/opkg.conf
 
 sed -i '/REDIRECT --to-ports 53/d' /etc/firewall.user
 
 sed -i '/DISTRIB_REVISION/d' /etc/openwrt_release
-echo "DISTRIB_REVISION='R26.05.20'" >> /etc/openwrt_release
+echo "DISTRIB_REVISION='R26.04.0'" >> /etc/openwrt_release
 sed -i '/DISTRIB_DESCRIPTION/d' /etc/openwrt_release
-echo "DISTRIB_DESCRIPTION='LEDE '" >> /etc/openwrt_release
 
-sed -i '/OPENWRT_RELEASE/d' /usr/lib/os-release
-echo 'OPENWRT_RELEASE="LEDE R26.05.20"' >> /usr/lib/os-release
+if [ x"${OEM_PASSWORD}" != x"" ]; then
+    sed -i '/DISTRIB_ID/d' /etc/openwrt_release
+    echo "DISTRIB_ID='OpenWrt'" >> /etc/openwrt_release
+    echo "DISTRIB_DESCRIPTION='OpenWrt '" >> /etc/openwrt_release
+    sed -i 's/photonicatWrt/OpenWrt/g' /etc/banner
+    sed -i 's/photonicatWrt/OpenWrt/g' /etc/os-release
+    sed -i 's/photonicatwrt/openwrt/g' /etc/os-release
+else
+    echo "DISTRIB_DESCRIPTION='photonicatWrt '" >> /etc/openwrt_release
+fi
 
 sed -i '/log-facility/d' /etc/dnsmasq.conf
 echo "log-facility=/dev/null" >> /etc/dnsmasq.conf
