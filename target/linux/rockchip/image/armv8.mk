@@ -27,9 +27,9 @@ define Device/ariaboard_photonicat2
   DEVICE_MODEL := Photonicat 2
   SOC := rk3576
   DEVICE_DTS := rk3576-photonicat2
-  UBOOT_DEVICE_NAME := generic-rk3576
-  IMAGE/sysupgrade.img.gz := boot-common | boot-script | pine64-img | gzip | append-metadata
-  DEVICE_PACKAGES := kmod-aic8800-usb wpad-openssl
+  UBOOT_DEVICE_NAME := photonicat2-rk3576
+  IMAGE/sysupgrade.img.gz := boot-common | boot-script rk3576 | pine64-img | gzip | append-metadata
+  DEVICE_PACKAGES := pcat-firmware kmod-drm-rockchip kmod-ath10k kmod-ath10k-sdio pcat-manager-v1 wpad
 endef
 TARGET_DEVICES += ariaboard_photonicat2
 
