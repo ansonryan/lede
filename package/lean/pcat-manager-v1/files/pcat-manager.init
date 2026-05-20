@@ -12,10 +12,13 @@ stop() {
 }
 
 restart() {
+	killall -USR1 pcat-manager
 	stop
 	start
 }
 
 shutdown() {
+	touch /tmp/pcat-manager-shutdown.tmp
 	stop
+	rfkill block wwan 2>/dev/null || true
 }
