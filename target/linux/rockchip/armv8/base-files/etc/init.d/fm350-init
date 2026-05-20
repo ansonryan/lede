@@ -1,0 +1,21 @@
+#!/bin/sh /etc/rc.common
+
+START=08
+STOP=01
+
+start() {
+    echo "Starting FM350 init..."
+    BUGGY_MODEM="$(lsusb -d 0e8d:7127)"
+
+    if [ x"${BUGGY_MODEM}" != x"" ]; then
+        /usr/bin/fm350-init.py
+    fi
+}
+
+stop() {
+    echo ""
+}
+
+shutdown() {
+    stop
+}
