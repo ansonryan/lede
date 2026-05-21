@@ -39,8 +39,8 @@ define KernelPackage/drm-rockchip
 	$(LINUX_DIR)/drivers/gpu/drm/bridge/synopsys/dw-hdmi.ko \
 	$(LINUX_DIR)/drivers/gpu/drm/bridge/synopsys/dw-hdmi-cec.ko \
 	$(LINUX_DIR)/drivers/gpu/drm/bridge/synopsys/dw-hdmi-qp.ko@ge6.12 \
-	$(LINUX_DIR)/drivers/gpu/drm/bridge/analogix/analogix_dp.ko \
-	$(LINUX_DIR)/drivers/gpu/drm/bridge/synopsys/dw-mipi-dsi.ko \
+	$(LINUX_DIR)/drivers/gpu/drm/bridge/analogix/analogix_dp.ko@CONFIG_ROCKCHIP_ANALOGIX_DP \
+	$(LINUX_DIR)/drivers/gpu/drm/bridge/synopsys/dw-mipi-dsi.ko@CONFIG_DRM_DW_MIPI_DSI \
 	$(LINUX_DIR)/drivers/phy/rockchip/phy-rockchip-inno-hdmi.ko \
 	$(LINUX_DIR)/drivers/gpu/drm/drm_dp_aux_bus.ko@lt5.19 \
 	$(LINUX_DIR)/drivers/gpu/drm/drm_dp_aux_bus.ko@ge6.12 \
