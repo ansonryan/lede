@@ -802,19 +802,18 @@
 +CONFIG_PCAT_SPI_DISPLAY=y
 --- a/arch/arm/mach-rockchip/board.c
 +++ b/arch/arm/mach-rockchip/board.c
-@@ -61,6 +61,8 @@
- #include <rk_mini_dump.h>
- #endif
- 
+@@ -34,6 +34,7 @@
+ #include <asm/arch-rockchip/clock.h>
+ #include <asm/arch-rockchip/periph.h>
+ #include <power/regulator.h>
 +#include <spi.h>
-+
- #ifdef CONFIG_ARM64
- static ulong orig_images_ep;
- #endif
-@@ -480,6 +482,14 @@ int board_late_init(void)
- #ifdef CONFIG_ROCKCHIP_EINK_DISPLAY
- 	rockchip_eink_show_uboot_logo();
- #endif
+ 
+ #if IS_ENABLED(CONFIG_EFI_HAVE_CAPSULE_SUPPORT) && IS_ENABLED(CONFIG_EFI_PARTITION)
+ 
+@@ -191,6 +192,15 @@
+ 
+ int board_late_init(void)
+ {
 +#ifdef CONFIG_PCAT_SPI_DISPLAY
 +	struct udevice *dev = NULL;
 +	int ret;
@@ -823,28 +822,28 @@
 +		DM_GET_DRIVER(pcat_spi_display), &dev);
 +	debug("PCAT DISPLAY: %p, ret=%d\n", dev, ret);
 +#endif
- #if (CONFIG_ROCKCHIP_BOOT_MODE_REG > 0)
++
  	setup_boot_mode();
- #endif
+ 
+ #if IS_ENABLED(CONFIG_EFI_HAVE_CAPSULE_SUPPORT) && IS_ENABLED(CONFIG_EFI_PARTITION)
 --- a/drivers/video/Kconfig
 +++ b/drivers/video/Kconfig
-@@ -649,4 +649,9 @@ config ROCKCHIP_EINK
- 	help
- 	  Enable rockchip eink driver
- source "drivers/video/rk_eink/Kconfig"
-+
+@@ -1410,4 +1410,9 @@
+       Enable this option to hide this information.
+ endif
+ 
 +config PCAT_SPI_DISPLAY
 +	bool "Enable photonicat SPI LCD display support"
 +	help
 +	  Enables photonicat SPI LCD display support driver.
++
  endmenu
 --- a/drivers/video/Makefile
 +++ b/drivers/video/Makefile
-@@ -64,4 +64,4 @@ obj-y += sunxi/
- endif
- 
- obj-${CONFIG_DRM_ROCKCHIP} += drm/
--
+@@ -94,3 +94,4 @@
+ obj-y += bridge/
+ obj-y += sunxi/
+ obj-y += tegra/
 +obj-$(CONFIG_PCAT_SPI_DISPLAY) += pcat-spi-display.o
 --- /dev/null
 +++ b/drivers/video/pcat-spi-display-logo.h
