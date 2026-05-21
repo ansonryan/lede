@@ -35,7 +35,7 @@ define KernelPackage/drm-rockchip
 	CONFIG_DRM_PANEL_SIMPLE
 	CONFIG_ROCKCHIP_DW_HDMI_QP=y@ge6.12 \
 	CONFIG_PHY_ROCKCHIP_SAMSUNG_HDPTX=y@ge6.12 \
-	CONFIG_DRM_DP_AUX_BUS=y \
+	CONFIG_DRM_DISPLAY_DP_AUX_BUS=y \
 	CONFIG_DRM_DW_HDMI_QP=y
   FILES:= \
 	$(LINUX_DIR)/drivers/gpu/drm/bridge/synopsys/dw-hdmi.ko \
