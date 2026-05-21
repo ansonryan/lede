@@ -8,6 +8,7 @@
 HWMON_MENU:=Hardware Monitoring Support
 
 define KernelPackage/hwmon-core
+  DEPENDS:=+kmod-i2c-core
   SUBMENU:=$(HWMON_MENU)
   TITLE:=Hardware monitoring support
   KCONFIG:= \
