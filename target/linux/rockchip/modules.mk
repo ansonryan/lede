@@ -34,16 +34,17 @@ define KernelPackage/drm-rockchip
 	CONFIG_DRM_PANEL_BRIDGE=y \
 	CONFIG_DRM_PANEL_SIMPLE
 	CONFIG_ROCKCHIP_DW_HDMI_QP=y@ge6.12 \
-	CONFIG_PHY_ROCKCHIP_SAMSUNG_HDPTX=y@ge6.12
+	CONFIG_PHY_ROCKCHIP_SAMSUNG_HDPTX=y@ge6.12 \
+	CONFIG_DRM_DP_AUX_BUS=y \
+	CONFIG_DRM_DW_HDMI_QP=y
   FILES:= \
 	$(LINUX_DIR)/drivers/gpu/drm/bridge/synopsys/dw-hdmi.ko \
 	$(LINUX_DIR)/drivers/gpu/drm/bridge/synopsys/dw-hdmi-cec.ko \
-	$(LINUX_DIR)/drivers/gpu/drm/bridge/synopsys/dw-hdmi-qp.ko@ge6.12 \
+	$(LINUX_DIR)/drivers/gpu/drm/bridge/synopsys/dw-hdmi-qp.ko \
 	$(LINUX_DIR)/drivers/gpu/drm/bridge/synopsys/dw-mipi-dsi.ko \
 	$(LINUX_DIR)/drivers/phy/rockchip/phy-rockchip-inno-hdmi.ko \
-	$(LINUX_DIR)/drivers/gpu/drm/drm_dp_aux_bus.ko@lt5.19 \
-	$(LINUX_DIR)/drivers/gpu/drm/drm_dp_aux_bus.ko@ge6.12 \
-	$(LINUX_DIR)/drivers/gpu/drm/drm_dma_helper.ko@ge6.1 \
+	$(LINUX_DIR)/drivers/gpu/drm/drm_dp_aux_bus.ko \
+	$(LINUX_DIR)/drivers/gpu/drm/drm_dma_helper.ko \
 	$(LINUX_DIR)/drivers/gpu/drm/panel/panel-simple.ko \
 	$(LINUX_DIR)/drivers/gpu/drm/rockchip/rockchipdrm.ko \
 	$(LINUX_DIR)/drivers/media/cec/core/cec.ko
